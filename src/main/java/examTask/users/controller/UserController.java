@@ -1,6 +1,8 @@
 package examTask.users.controller;
 
+import examTask.users.exceptions.NotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +23,15 @@ public class UserController {
                     put("status","phishing"); // can be "phishing" or "verified"
                 }
             });
+
+            add(new HashMap<>() {
+                {
+                    put("name", "Limon");
+                    put("email", "LLimon@gmail.com");
+                    put("status","phishing"); // can be "phishing" or "verified"
+                }
+            });
+
         }
     };
 
@@ -28,4 +39,14 @@ public class UserController {
     public List<Map<String, String>> list() {
         return users;
     }
+
+    @GetMapping("{name}")
+    public Map<String, String> getUser (@PathVariable String name){
+        return users.stream()
+                .filter(user -> user.get("name").equals(name))
+                .findFirst()
+                .orElseThrow(NotFoundException::new);
+    }
+
+
 }
