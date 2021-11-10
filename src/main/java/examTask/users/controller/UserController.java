@@ -10,22 +10,22 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("message")
-public class MessageController {
-    public List<Map<String, String>> messages = new ArrayList<Map<String, String>>() {
+@RequestMapping("user")
+public class UserController {
+    public List<Map<String, String>> users = new ArrayList<>() {
         {
-            add(new HashMap<String, String>() {
+            add(new HashMap<>() {
                 {
                     put("name", "Dimon");
                     put("email", "Dimon@gmail.com");
-                    put("status","phishing");
+                    put("status","phishing"); // can be "phishing" or "verified"
                 }
-            })
+            });
         }
     };
 
     @GetMapping
-    public String list() {
-        return "testing...Done";
+    public List<Map<String, String>> list() {
+        return users;
     }
 }
