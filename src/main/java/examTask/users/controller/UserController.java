@@ -1,75 +1,51 @@
 package examTask.users.controller;
 
-import examTask.users.exceptions.NotFoundException;
+import examTask.users.domein.User;
+import examTask.users.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("user")
 public class UserController {
-    private List<Map<String, String>> users = new ArrayList<>() {
-        {
-            add(new HashMap<>() {
-                {
-                    put("name", "Dimon");
-                    put("email", "Dimon@gmail.com");
-                    put("status", "phishing"); // can be "phishing" or "verified"
-                }
-            });
+    private final UserRepository userRepository;
 
-            add(new HashMap<>() {
-                {
-                    put("name", "Limon");
-                    put("email", "LLimon@gmail.com");
-                    put("status", "phishing"); // can be "phishing" or "verified"
-                }
-            });
-
-        }
-    };
+    @Autowired
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
-    public List<Map<String, String>> list() {
-        return users;
+    public List<User> allUsers() {
+        return userRepository.findAll();
     }
 
-    @GetMapping("{name}")
-    public Map<String, String> getUser(@PathVariable String name) {
-        return getUserData(name);
-    }
-
-    private Map<String, String> getUserData(String name) {
-        return users.stream()
-                .filter(user -> user.get("name").equals(name))
-                .findFirst()
-                .orElseThrow(NotFoundException::new);
+    @GetMapping("{id}")
+    public User getUser(@PathVariable("id") User user) {
+        return user;
     }
 
     @PostMapping
-    public Map<String, String> createUser(@RequestBody Map<String, String> newUser) {
-        newUser.put("status", "New");
-        users.add(newUser);
-        return newUser;
+    public User createUser(@RequestBody User newUser) {
+//        newUser.setNewUserCreationTime(LocalDateTime.now());
+        newUser.setStatus("New");
+        return userRepository.save(newUser);
     }
 
-    @PutMapping("{name}")
-    public Map<String, String> updateUser(@PathVariable String name, @RequestBody Map<String, String> user) {
-        Map<String, String> userFromDb = getUserData(name);
-
-        userFromDb.putAll(user);
-        userFromDb.put("name", name);
-        return userFromDb;
+    @PutMapping("{id}")
+    public User updateUser(
+            @PathVariable("id") User userFromDb,
+            @RequestBody User user
+    ) {
+        BeanUtils.copyProperties(user, userFromDb, "id"); // set ignore properties
+        return userRepository.save(userFromDb);
     }
 
-    @DeleteMapping("{name}")
-    public void deleteUser(@PathVariable String name) {
-        Map<String, String> user = getUser(name);
-
-        users.remove(user);
+    @DeleteMapping("{id}")
+    public void deleteUser(@PathVariable("id") User user) {
+        userRepository.delete(user);
     }
-
 }
