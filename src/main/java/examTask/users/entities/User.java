@@ -1,4 +1,4 @@
-package examTask.users.domein;
+package examTask.users.entities;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,7 +17,17 @@ public class User {
     private String email;
     private String status;
 
-//    @Column(updatable = false)
+    public User() {
+    }
+
+    public User(long id, String name, String email, String status) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.status = status;
+    }
+
+    //    @Column(updatable = false)
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 //    private LocalDateTime newUserCreationTime;
 
