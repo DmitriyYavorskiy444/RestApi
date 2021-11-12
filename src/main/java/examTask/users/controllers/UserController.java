@@ -15,13 +15,13 @@ public class UserController {
     private final UserRepository userRepository;
 
     @Autowired
+    private KafkaTemplate<String, User> kafkaTemplate;
+    private static final String TOPIC = "RestTest";
+
+    @Autowired
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
-    @Autowired
-    private KafkaTemplate<String, User> kafkaTemplate;
-    private static final String TOPIC = "RestTest";
 
     @GetMapping
     public List<User> allUsers() {
@@ -48,7 +48,7 @@ public class UserController {
             @PathVariable("id") User userFromDb,
             @RequestBody User user
     ) {
-        BeanUtils.copyProperties(user, userFromDb, "id"); // set ignore properties
+        BeanUtils.copyProperties(user, userFromDb, "id");
         return userRepository.save(userFromDb);
     }
 

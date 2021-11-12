@@ -2,9 +2,7 @@ package examTask.users.entities;
 
 import lombok.ToString;
 import org.hibernate.Hibernate;
-
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name="user", schema = "public")
