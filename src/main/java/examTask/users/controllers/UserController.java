@@ -4,13 +4,14 @@ import examTask.users.entities.User;
 import examTask.users.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final UserRepository userRepository;
 
@@ -33,9 +34,11 @@ public class UserController {
         return user;
     }
 
-    @PostMapping
+    @PostMapping("/add")
+    @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@RequestBody User newUser) {
 //        newUser.setNewUserCreationTime(LocalDateTime.now());
+
         newUser.setStatus("New");
         userRepository.save(newUser);
         kafkaTemplate.send(TOPIC, new User(newUser.getId(), newUser.getName(),
@@ -43,7 +46,7 @@ public class UserController {
         return userRepository.save(newUser);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/update/{id}")
     public User updateUser(
             @PathVariable("id") User userFromDb,
             @RequestBody User user
@@ -51,6 +54,24 @@ public class UserController {
         BeanUtils.copyProperties(user, userFromDb, "id");
         return userRepository.save(userFromDb);
     }
+
+    @PatchMapping("/updateValue/{id}")
+    public User updateUserValue(
+            @RequestBody User user,
+            @PathVariable("id") User userFromDb
+    ) {
+        BeanUtils.copyProperties(user, userFromDb, "id");
+        return userRepository.save(userFromDb);
+    }
+
+//    @PatchMapping("/heavyresource/{id}")
+//    public ResponseEntity<?> partialUpdateName(
+//            @RequestBody HeavyResourceAddressOnly partialUpdate, @PathVariable("id") String id) {
+//
+//        heavyResourceRepository.save(partialUpdate, id);
+//        return ResponseEntity.ok("resource address updated");
+//    }
+
 
     @DeleteMapping("{id}")
     public void deleteUser(@PathVariable("id") User user) {
