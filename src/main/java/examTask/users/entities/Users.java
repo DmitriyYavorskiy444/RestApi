@@ -4,22 +4,25 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 import javax.persistence.*;
 
+//@Table(name="users", schema = "public")
 @Entity
-@Table(name="user", schema = "public")
 @ToString(of = {"id", "name", "email", "status"})
-public class User {
+public class Users {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "users", sequenceName = "userSequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users")
     private long id;
+
     private String name;
     private String email;
     private String status;
 
-    public User() {
+    public Users() {
     }
 
-    public User(Long id, String name, String email, String status) {
-        this.id = id;
+    public Users(String name, String email, String status) {
+//      this.id = id;
         this.name = name;
         this.email = email;
         this.status = status;
@@ -73,7 +76,7 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        User user = (User) o;
+        Users users = (Users) o;
         return false;
     }
 

@@ -1,6 +1,6 @@
 package examTask.users.configuration;
 
-import examTask.users.entities.User;
+import examTask.users.entities.Users;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class KafkaConfiguration {
 
     @Bean
-    public ProducerFactory<String, User> producerFactory(){
+    public ProducerFactory<String, Users> producerFactory(){
         Map<String,Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
@@ -28,7 +28,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, User> kafkaTemplate(){
+    public KafkaTemplate<String, Users> kafkaTemplate(){
         return new KafkaTemplate<>(producerFactory());
     }
 }
