@@ -4,10 +4,15 @@ import examTask.users.entities.Users;
 import examTask.users.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -54,58 +59,77 @@ public class UserController {
         return userRepository.save(usersFromDb);
     }
 
-    //
-//    @PatchMapping("/updateValue/{id}")
-//    public User updateUserValue(
-//            @PathVariable("id") User userFromDb,
-//            @RequestBody User user
+    @PatchMapping("/updateValue/{id}")
+    public ResponseEntity<?> updateValue(
+            @RequestBody Users partialUpdate, @PathVariable("id") String id) {
+
+        userRepository.save(partialUpdate);
+        return ResponseEntity.ok("users values updated");
+    }
+
+    //    @PatchMapping("/updateValue/{id}")
+//    public Users updateValue(
+//            @PathVariable("id") Users userFromDb,
+//            @RequestBody Users users
 //
 //    ) {
-//        BeanUtils.copyProperties(user, userFromDb, "id");
-//        return userRepository.saveAndFlush(userFromDb);
+//        Optional<Users> row = userRepository.findById(userFromDb.getId());
+//        if(row.isPresent()){
+//            Users item = row.get();
+//            if(!users.getName().isEmpty()){
+//                item.setName(users.getName());
+//            }
+//            if(!users.getEmail().isEmpty()){
+//                item.setEmail(users.getEmail());
+//            }
+//            if(!users.getStatus().isEmpty()){
+//                item.setStatus(users.getStatus());
+//            }
+//            return userRepository.save(item);
+//        }
+//
+////        BeanUtils.copyProperties(users, userFromDb, "id");
+//        return userRepository.save(null);
 //    }
 //    -----------------------------------------
 //
 //    @PatchMapping("/updateValue/{id}")
-//    ResponseEntity<Claim> patchClaim(@PathVariable Long claimId, @RequestBody Map<String, Object> fields) {
-//        // Sanitize and validate the data
-//        if (claimId <= 0 || fields == null || fields.isEmpty() || !fields.get("claimId").equals(claimId)){
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Invalid claim object received or invalid id or id does not match object
+//    ResponseEntity<Users> patchClaim(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
+//        Optional<Users> users = userRepository.findById(id);
+//        if (users.isPresent()) {
+//            fields.forEach((key, value) -> {
+//                Field field = ReflectionUtils.findField(Users.class, (String) key);
+//                field.setAccessible(true);
+//                ReflectionUtils.setField(field, users.get(), value);
+//            });
+//            Users updatedUser = userRepository.save(users.get());
+//            updatedUser.add(linkTo(methodOn(UserRepository.class)))
 //        }
-//        Claim claim = claimService.get(claimId);
-//        // Does the object exist?
-//        if( claim == null){
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Claim object does not exist
-//        }
-//        // Remove id from request, we don't ever want to change the id.
-//        // This is not necessary, you can just do it to save time on the reflection
-//        // loop used below since we checked the id above
-//        fields.remove("claimId");
-//        fields.forEach((k, v) -> {
-//            // use reflection to get field k on object and set it to value v
-//            // Change Claim.class to whatver your object is: Object.class
-//            Field field = ReflectionUtils.findField(Claim.class, k); // find field in the object class
-//            field.setAccessible(true);
-//            ReflectionUtils.setField(field, claim, v); // set given field for defined object to value V
-//        });
-//        claimService.saveOrUpdate(claim);
-//        return new ResponseEntity<>(claim, HttpStatus.OK);
-//    }
-//    @PatchMapping("/heavyresource/{id}")
-//    public ResponseEntity<?> partialUpdateName(
-//            @RequestBody HeavyResourceAddressOnly partialUpdate, @PathVariable("id") String id) {
-//
-//        heavyResourceRepository.save(partialUpdate, id);
-//        return ResponseEntity.ok("resource address updated");
-//    }
-
-//    @PatchMapping(value = "/users/{id}",
-//            produces = {APPLICATION_JSON_VALUE},
-//            consumes = {APPLICATION_JSON_VALUE})
-//    public ResponseEntity<StuffResponse> patchStuff(@PathVariable("id") long id, @RequestBody User user) {
-//        StuffDto dto = doStuff(user);
-//        saveStuffToDatabase(dto);
-//
+////
+////        // Sanitize and validate the data
+////        if (id <= 0 || fields == null || fields.isEmpty() || !fields.get("id").equals(id)){
+////            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Invalid claim object received or invalid id or id does not match object
+////        }
+//////        Claim claim = claimService.get(id);
+////        Optional<Users> users = userRepository.findById(id);
+//////        Users item = userRepository.getById(id);
+////        // Does the object exist?
+////        if( users == null){
+////            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Claim object does not exist
+////        }
+////        // Remove id from request, we don't ever want to change the id.
+////        // This is not necessary, you can just do it to save time on the reflection
+////        // loop used below since we checked the id above
+////        fields.remove("id");
+////        fields.forEach((k, v) -> {
+////            // use reflection to get field k on object and set it to value v
+////            // Change Claim.class to whatver your object is: Object.class
+////            Field field = ReflectionUtils.findField(Users.class, k); // find field in the object class
+////            field.setAccessible(true);
+////            ReflectionUtils.setField(field, item, v); // set given field for defined object to value V
+////        });
+////        userRepository.save(item);
+////        return new ResponseEntity<>(item, HttpStatus.OK);
 //    }
 
     @DeleteMapping("{id}")
